@@ -46,6 +46,21 @@ export class PostsService {
       });
   }
 
+  /**
+   * Get one post by id
+   * create clone of post object to avoid mutating the store directly
+   * @param id
+   */
+  getPost(id: string){
+    return {...this.posts.find( post =>  post.id === id)};
+  }
+
+  updatePost(id: string, title: string, content: string){
+    const post: Post = {id: id, title: title, content: content};
+    this.http.put('http://localhost:3000/api/posts/'+id, post)
+      .subscribe(response => console.log(response));
+  }
+
   deletePost(id: string) {
     this.http.delete('http://localhost:3000/api/posts/' + id)
       .subscribe((responseData) => {

@@ -21,7 +21,7 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   next();
 });
 
@@ -36,21 +36,35 @@ app.post("/api/posts", (req, res, next) => {
       id: createdPost._id
     });
   });
+});
 
+app.put("/api/posts/:id", (req, res, next) => {
+  const post = new Post({
+    _id: req.params.id,
+    title: req.body.title,
+    content: req.body.content
+  });
+
+  Post.updateOne({_id: req.params.id}, post).then(updatedPost => {
+    console.log(updatedPost);
+    res.status(200).json({
+      message: "success!",
+      id: updatedPost._id
+    });
+  });
 });
 
 app.get('/api/posts', (req, res, next) => {
   Post.find().then(documents => {
     res.status(200).json({
-      message: "success",
+      message: "success!",
       posts: documents
     });
   });
 });
 
 app.delete('/api/posts/:id', (req, res, next) => {
-  Post.deleteOne({_id: req.params.id}).then((response) => {
-  });
+  Post.deleteOne({_id: req.params.id}).then((response) => {});
   res.status(200).json({message: "post "+req.params.id+" deleted"});
 });
 
