@@ -1,4 +1,4 @@
-# MeanCourse
+# Mean Stack
 
 A CRUD application with Angular 7.0.6 for the frontend, Node.js with Express on the backend. As well as Mongoose as ODM to build backend models and connect to MongoDB Altlas cluster.
 
