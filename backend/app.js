@@ -1,7 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const Post = require('./models/post');
+const mongoose = require('mongoose');
 const app = express();
+
+mongoose.connect("mongodb+srv://mean-stack:X8oly8Uds36I2MMB@cluster0-xbs7r.mongodb.net/angular-data?retryWrites=true")
+  .then(() => {
+    console.log("Connected to db");
+  })
+  .catch(() => {
+    console.log("Error while connecting to DB");
+  });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
@@ -12,27 +21,37 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
   next();
 });
 
 app.post("/api/posts", (req, res, next) => {
-  const post = req.body;
-  console.log(post);
-  res.status(201).json({
-    message: 'Post added successfully!'
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content
   });
+  post.save().then(createdPost => {
+    res.status(201).json({
+      message: "success",
+      id: createdPost._id
+    });
+  });
+
 });
 
 app.get('/api/posts', (req, res, next) => {
-  const posts = [
-    {id: 1, title: "first post", content: "content of first post"},
-    {id: 2, title: "second post", content: "content of second post"}
-  ];
-  res.status(200).json({
-    message: "success",
-    posts: posts
+  Post.find().then(documents => {
+    res.status(200).json({
+      message: "success",
+      posts: documents
+    });
   });
+});
+
+app.delete('/api/posts/:id', (req, res, next) => {
+  Post.deleteOne({_id: req.params.id}).then((response) => {
+  });
+  res.status(200).json({message: "post "+req.params.id+" deleted"});
 });
 
 module.exports = app;
