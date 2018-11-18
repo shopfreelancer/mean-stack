@@ -13,10 +13,10 @@ mongoose.connect("mongodb+srv://mean-stack:X8oly8Uds36I2MMB@cluster0-xbs7r.mongo
   });
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.urlencoded({extended: false}));
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin","*");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
@@ -46,7 +46,6 @@ app.put("/api/posts/:id", (req, res, next) => {
   });
 
   Post.updateOne({_id: req.params.id}, post).then(updatedPost => {
-    console.log(updatedPost);
     res.status(200).json({
       message: "success!",
       id: updatedPost._id
@@ -63,9 +62,20 @@ app.get('/api/posts', (req, res, next) => {
   });
 });
 
+app.get('/api/posts/:id', (req, res, next) => {
+  Post.findById(req.params.id).then(post => {
+    if (post) {
+      res.status(200).json(post);
+    } else {
+      res.status(405).json({ message: "Post not found"});
+    }
+  });
+});
+
 app.delete('/api/posts/:id', (req, res, next) => {
-  Post.deleteOne({_id: req.params.id}).then((response) => {});
-  res.status(200).json({message: "post "+req.params.id+" deleted"});
+  Post.deleteOne({_id: req.params.id}).then((response) => {
+  });
+  res.status(200).json({message: "post " + req.params.id + " deleted"});
 });
 
 module.exports = app;
