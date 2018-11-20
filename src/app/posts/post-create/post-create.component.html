@@ -12,7 +12,10 @@
     </mat-form-field>
     <div>
       <button mat-stroked-button type="button" (click)="fileUploadInput.click()">Upload Image</button>
-      <input type="file" #fileUploadInput>
+      <input type="file" #fileUploadInput (change)="onImageSelected($event)">
+    </div>
+    <div *ngIf="imagePreview !=='' && imagePreview && form.get('image').valid" class="image-preview">
+      <img [src]="imagePreview" [alt]="form.value.title" />
     </div>
     <mat-form-field>
       <textarea
