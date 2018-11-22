@@ -4,8 +4,9 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const app = express();
 const postsRoutes = require('./routes/posts');
+const usersRoutes = require('./routes/users');
 
-const uri = "mongodb+srv://mean-stack:X8oly8Uds36I2MMB@cluster0-xbs7r.mongodb.net/angular-data?retryWrites=true";
+const uri = "mongodb+srv://mean-stack:X8oly8Uds36I2MMB@cluster0-xbs7r.mongodb.net/angular-data";
 mongoose.connect(uri, { useNewUrlParser: true })
   .then(() => {
     console.log("Connected to db");
@@ -29,6 +30,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/posts', postsRoutes);
-
+app.use('/api/users', usersRoutes);
 
 module.exports = app;
