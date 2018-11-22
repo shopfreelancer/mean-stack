@@ -30,9 +30,18 @@ export class PostCreateComponent implements OnInit {
       return;
     }
     if (this.mode === 'edit') {
-      this.postsService.updatePost(this.id, this.form.value.title, this.form.value.content);
+      this.postsService.updatePost(
+        this.id,
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image
+      );
     } else {
-      this.postsService.addPost(this.form.value.title, this.form.value.content);
+      this.postsService.addPost(
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image
+      );
     }
 
     this.form.reset();
@@ -69,14 +78,17 @@ export class PostCreateComponent implements OnInit {
         this.isLoading = true;
         this.postsService.getPost(this.id).subscribe(postData => {
           this.isLoading = false;
+          this.imagePreview =  postData.imagePath;
           this.post = {
             id: postData._id,
             title: postData.title,
             content: postData.content,
+            imagePath: postData.imagePath,
           };
           this.form.setValue({
-            'title': this.post.title,
-            'content': this.post.content
+            title: this.post.title,
+            content: this.post.content,
+            image: this.post.imagePath,
           });
         });
       } else {
