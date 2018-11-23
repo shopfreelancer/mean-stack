@@ -28,6 +28,7 @@ export class PostsService {
               content: post.content,
               imagePath: post.imagePath,
               id: post._id,
+              userId: post.userId
             };
           }), totalPosts: postData.totalPosts
         };
@@ -57,11 +58,16 @@ export class PostsService {
   /**
    * Get one post by i
    * create clone of post object to avoid mutating the store directly
-   * @param id
    */
   getPost(id: string) {
     //  return {...this.posts.find( post =>  post.id === id)};
-    return this.http.get<{ _id: string, title: string, content: string, imagePath: string }>('http://localhost:3000/api/posts/' + id);
+    return this.http.get<{
+      _id: string,
+      title: string,
+      content: string,
+      imagePath: string,
+      userId: string
+    }>('http://localhost:3000/api/posts/' + id);
   }
 
   updatePost(id: string, title: string, content: string, image: File | string) {
@@ -77,7 +83,8 @@ export class PostsService {
         id: id,
         title: title,
         content: content,
-        imagePath: image
+        imagePath: image,
+        userId: null // mongoose sets this automatically on backend
       };
     }
     this.http.put('http://localhost:3000/api/posts/' + id, postData)
