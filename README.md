@@ -2,6 +2,10 @@
 
 A CRUD application with Angular 7.0.6 for the frontend, Node.js with Express on the backend. As well as Mongoose as ODM to build backend models and connect to MongoDB Altlas cluster.
 
+## Set env variables
+copy nodemon.example.json as nodemon.json 
+and define your backend .env here 
+
 ## Start Backend Node server
 
 Run `npm run server:start` This will start the backend server on localhost and port 3000

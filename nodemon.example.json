@@ -1,0 +1,6 @@
+{
+  "env" : {
+    "MONGO_CONNECTION" : "mongodb+srv://user:pw...",
+    "JWT_SALT" : "your_random_salt_string_goes_here"
+  }
+}
