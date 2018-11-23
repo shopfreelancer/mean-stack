@@ -2,6 +2,7 @@ const express = require('express');
 const Post = require('../models/post');
 const router = express.Router();
 const multer = require('multer');
+const AuthMiddleware = require('../middleware/auth');
 
 const MIME_TYPE_MAP = {
   'image/png': 'png',
@@ -28,7 +29,11 @@ const storage = multer.diskStorage({
   }
 });
 
-router.post('', multer({storage: storage}).single('image'), (req, res, next) => {
+router.post(
+  '',
+  AuthMiddleware,
+  multer({storage: storage}).single('image'),
+  (req, res, next) => {
   const url = req.protocol + '://' + req.get('host');
 
   const post = new Post({
@@ -47,7 +52,10 @@ router.post('', multer({storage: storage}).single('image'), (req, res, next) => 
   });
 });
 
-router.put('/:id', multer({storage: storage}).single('image'), (req, res, next) => {
+router.put('/:id',
+  AuthMiddleware,
+  multer({storage: storage}).single('image'),
+  (req, res, next) => {
   let imagePath = req.body.imagePath;
   if(req.file){
     const url = req.protocol + "://" + req.get("host");
@@ -101,7 +109,7 @@ router.get('/:id', (req, res, next) => {
   });
 });
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', AuthMiddleware, (req, res, next) => {
   Post.deleteOne({_id: req.params.id}).then((response) => {
   });
   res.status(200).json({message: "post " + req.params.id + " deleted"});

@@ -24,22 +24,24 @@ router.post('/register', (req, res, next) => {
 });
 
 router.post('/login', (req, res, next) => {
-  User.findOne({email: req.body.password})
+  let fetchedUser;
+  User.findOne({email: req.body.email})
     .then(user => {
       if (!user) {
-        return res.status(401).json({message: "Auth failed"});
+        return false;
       }
-      return bcrypt.compare(req.body.password, user.password);
+      fetchedUser = user;
+      return bcrypt.compareSync(req.body.password, user.password);
     })
     .then(result => {
       if(!result) {
         return res.status(401).json({message: "Auth failed"});
       }
-      const token = jwt.sign({email: user.eamail, userId: user._id},process.env.JWT_SALT, {expiresIn: '1h'});
-      return res.status(200).json({message: "Success", token: token});
+      const token = jwt.sign({email: fetchedUser.email, userId: fetchedUser._id}, process.env.JWT_SALT, {expiresIn: '1h'});
+      return res.status(200).json({message: "Successfully logged in", token: token});
     })
     .catch(err => {
-
+      return res.status(401).json({message: "Auth failed"});
     })
 });
 
