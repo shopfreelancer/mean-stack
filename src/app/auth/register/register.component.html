@@ -1,5 +1,4 @@
 <mat-card>
-  <mat-spinner *ngIf="isLoading"></mat-spinner>
   <form (submit)="onRegister(registerForm) " *ngIf="!isLoading" #registerForm="ngForm">
     <mat-form-field>
       <input
@@ -26,10 +25,12 @@
       <mat-error *ngIf="passwordInput.invalid">Not a valid password</mat-error>
     </mat-form-field>
       <button
+        *ngIf="!isLoading"
         mat-raised-button
         color="primary"
         type="submit">
         Register
       </button>
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
   </form>
 </mat-card>

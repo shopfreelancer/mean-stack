@@ -40,6 +40,7 @@ router.post(
     title: req.body.title,
     content: req.body.content,
     imagePath: url + '/images/' + req.file.filename, // filename from multer
+    userId: req.userData.userId
   });
   post.save().then(createdPost => {
     res.status(201).json({
@@ -67,11 +68,12 @@ router.put('/:id',
     content: req.body.content,
     imagePath: imagePath
   });
-  Post.updateOne({_id: post.id}, post).then(updatedPost => {
-    res.status(200).json({
-      message: "success!",
-      id: updatedPost._id
-    });
+  Post.updateOne({_id: post.id, userId: req.userData.userId}, post).then(result => {
+    if(result.nModified > 0) {
+      res.status(200).json({message: "success!"});
+    } else {
+      res.status(401).json({message: "Not authorized!"});
+    }
   });
 });
 
@@ -110,9 +112,13 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.delete('/:id', AuthMiddleware, (req, res, next) => {
-  Post.deleteOne({_id: req.params.id}).then((response) => {
+  Post.deleteOne({_id: req.params.id, userId: req.userData.userId}).then(result => {
+    if(result.n > 0) {
+      res.status(200).json({message: "Success!"});
+    } else {
+      res.status(401).json({message: "Not authorized!"});
+    }
   });
-  res.status(200).json({message: "post " + req.params.id + " deleted"});
 });
 
 
