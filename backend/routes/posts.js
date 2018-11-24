@@ -13,9 +13,9 @@ const MIME_TYPE_MAP = {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const isValidMimeType = MIME_TYPE_MAP[file.mimetype];
-    let error = new Error("Invalid Mime Type");
+    let error = new Error('Invalid Mime Type');
 
-    if(isValidMimeType){
+    if (isValidMimeType) {
       error = null;
     }
 
@@ -34,56 +34,64 @@ router.post(
   AuthMiddleware,
   multer({storage: storage}).single('image'),
   (req, res, next) => {
-  const url = req.protocol + '://' + req.get('host');
+    const url = req.protocol + '://' + req.get('host');
 
-  const post = new Post({
-    title: req.body.title,
-    content: req.body.content,
-    imagePath: url + '/images/' + req.file.filename, // filename from multer
-    userId: req.userData.userId
-  });
-  post.save().then(createdPost => {
-    res.status(201).json({
-      message: "success",
-      post: {
-        ...createdPost,
-        id: createdPost._id,
-      }
+    const post = new Post({
+      title: req.body.title,
+      content: req.body.content,
+      imagePath: url + '/images/' + req.file.filename, // filename from multer
+      userId: req.userData.userId
     });
+    post.save()
+      .then(createdPost => {
+        res.status(201).json({
+          message: 'success',
+          post: {
+            ...createdPost,
+            id: createdPost._id,
+          }
+        });
+      })
+      .catch(error => {
+        res.status(400).json({message: 'Saving Post failed.'});
+      });
   });
-});
 
 router.put('/:id',
   AuthMiddleware,
   multer({storage: storage}).single('image'),
   (req, res, next) => {
-  let imagePath = req.body.imagePath;
-  if(req.file){
-    const url = req.protocol + "://" + req.get("host");
-    imagePath = url + '/images/' + req.file.filename;
-  }
-  const post = new Post({
-    _id: req.params.id,
-    title: req.body.title,
-    content: req.body.content,
-    imagePath: imagePath,
-    userId: req.userData.userId
-  });
-  Post.updateOne({_id: post.id, userId: req.userData.userId}, post).then(result => {
-    if(result.nModified > 0) {
-      res.status(200).json({message: "success!"});
-    } else {
-      res.status(401).json({message: "Not authorized!"});
+    let imagePath = req.body.imagePath;
+    if (req.file) {
+      const url = req.protocol + '://' + req.get('host');
+      imagePath = url + '/images/' + req.file.filename;
     }
+    const post = new Post({
+      _id: req.params.id,
+      title: req.body.title,
+      content: req.body.content,
+      imagePath: imagePath,
+      userId: req.userData.userId
+    });
+    Post.updateOne({_id: post.id, userId: req.userData.userId}, post)
+      .then(result => {
+        if (result.nModified > 0) {
+          res.status(200).json({message: 'Success'});
+        } else {
+          res.status(401).json({message: 'Not authorized.'});
+        }
+      })
+      .catch(error => {
+        res.status(400).json({message: 'Saving Post failed.'});
+      });
   });
-});
 
 router.get('', (req, res, next) => {
   const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
   const postQuery = Post.find();
   let fetchedPosts;
-  if(pageSize && currentPage) {
+  if (pageSize && currentPage) {
     postQuery
       .skip(pageSize * (currentPage - 1))
       .limit(pageSize);
@@ -94,30 +102,37 @@ router.get('', (req, res, next) => {
       return Post.count();
     })
     .then(count => {
-    res.status(200).json({
-      message: "success!",
-      posts: fetchedPosts,
-      totalPosts: count,
+      res.status(200).json({
+        message: 'success!',
+        posts: fetchedPosts,
+        totalPosts: count,
+      });
+    })
+    .catch(error => {
+      res.status(400).json({message: 'Fetching Posts failed.'});
     });
-  });
 });
 
 router.get('/:id', (req, res, next) => {
-  Post.findById(req.params.id).then(post => {
-    if (post) {
-      res.status(200).json(post);
-    } else {
-      res.status(405).json({ message: "Post not found"});
-    }
-  });
+  Post.findById(req.params.id)
+    .then(post => {
+      if (post) {
+        res.status(200).json(post);
+      } else {
+        res.status(405).json({message: 'Post not found'});
+      }
+    })
+    .catch(error => {
+      res.status(400).json({message: 'Fetching Post failed.'});
+    });
 });
 
 router.delete('/:id', AuthMiddleware, (req, res, next) => {
   Post.deleteOne({_id: req.params.id, userId: req.userData.userId}).then(result => {
-    if(result.n > 0) {
-      res.status(200).json({message: "Success!"});
+    if (result.n > 0) {
+      res.status(200).json({message: 'Success!'});
     } else {
-      res.status(401).json({message: "Not authorized!"});
+      res.status(401).json({message: 'Not authorized!'});
     }
   });
 });

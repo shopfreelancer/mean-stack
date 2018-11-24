@@ -6,6 +6,8 @@ A CRUD application with Angular 7.0.6 for the frontend, Node.js with Express on 
 copy nodemon.example.json as nodemon.json 
 and define your backend .env here 
 
+Set your API Url for the Angular frontend in app/enviroments for development and production 
+
 ## Start Backend Node server
 
 Run `npm run server:start` This will start the backend server on localhost and port 3000

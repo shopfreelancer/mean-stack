@@ -1,12 +1,13 @@
-import {Component, OnInit} from '@angular/core';
-import {ParamMap} from '@angular/router';
-import {NgForm} from '@angular/forms';
-import {FormGroup, FormControl, Validators} from '@angular/forms';
-import {PostsService} from '../posts.service';
-import {ActivatedRoute} from '@angular/router';
-import {Post} from '../post.model';
-import {mimeType} from './mime-type.validator';
-import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ParamMap } from '@angular/router';
+import { NgForm } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { PostsService } from '../posts.service';
+import { ActivatedRoute } from '@angular/router';
+import { Post } from '../post.model';
+import { mimeType } from './mime-type.validator';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-post-create',
@@ -14,16 +15,21 @@ import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
   styleUrls: ['./post-create.component.css']
 })
 
-export class PostCreateComponent implements OnInit {
+export class PostCreateComponent implements OnInit, OnDestroy {
+
+  post: Post;
+  isLoading = false;
+  form: FormGroup;
+  imagePreview: string;
   private mode = 'create';
   private id: string;
-  public post: Post;
-  public isLoading = false;
-  public form: FormGroup;
-  public imagePreview: string;
+  private authStatusSub: Subscription;
 
-  constructor(public postsService: PostsService, public route: ActivatedRoute, private sanitizer: DomSanitizer) {
-  }
+  constructor(
+    public postsService: PostsService,
+    public route: ActivatedRoute,
+    private authService: AuthService
+  ) {}
 
   onSavePost(form: NgForm) {
     if (this.form.invalid) {
@@ -59,6 +65,9 @@ export class PostCreateComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.authStatusSub = this.authService.getAuthStatusListener().subscribe(authStatus => {
+      this.isLoading = false;
+    });
     this.form = new FormGroup({
       'title': new FormControl(null, {
         validators: [Validators.required, Validators.minLength(3)]
@@ -78,7 +87,7 @@ export class PostCreateComponent implements OnInit {
         this.isLoading = true;
         this.postsService.getPost(this.id).subscribe(postData => {
           this.isLoading = false;
-          this.imagePreview =  postData.imagePath;
+          this.imagePreview = postData.imagePath;
           this.post = {
             id: postData._id,
             title: postData.title,
@@ -97,5 +106,9 @@ export class PostCreateComponent implements OnInit {
         this.id = null;
       }
     });
+  }
+
+  ngOnDestroy() {
+     this.authStatusSub.unsubscribe();
   }
 }
