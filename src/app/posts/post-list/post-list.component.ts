@@ -1,9 +1,9 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Post} from '../post.model';
-import {PostsService} from '../posts.service';
-import {Subscription} from 'rxjs';
-import {PageEvent} from '@angular/material';
-import {AuthService} from '../../auth/auth.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Post } from '../post.model';
+import { PostsService } from '../posts.service';
+import { Subscription } from 'rxjs';
+import { PageEvent } from '@angular/material';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-post-list',
@@ -23,7 +23,8 @@ export class PostListComponent implements OnInit, OnDestroy {
   private postsSub: Subscription;
   private authStatusSub: Subscription;
 
-  constructor(public postsService: PostsService, private authService: AuthService) {}
+  constructor(public postsService: PostsService, private authService: AuthService) {
+  }
 
   ngOnInit() {
     this.isLoading = true;
@@ -44,7 +45,7 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   onChangedPage(pageData: PageEvent) {
     this.isLoading = true;
-    this.currentPage = pageData.pageIndex+1;
+    this.currentPage = pageData.pageIndex + 1;
     this.postsPerPage = pageData.pageSize;
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
   }
