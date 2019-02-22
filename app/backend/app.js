@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const app = express();
 const postsRoutes = require('./routes/posts');
 const usersRoutes = require('./routes/users');
-
+require('./services/cache');
 /**
  * Connect to MongoDB
  * @type {string}
